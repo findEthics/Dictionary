@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Dictionary</string>
+    <string name="search_dictionary">Search Dictionary</string>
+    <string name="enter_word_hint">Enter word to search...</string>
+    <string name="search">Search</string>
+    <string name="cancel">Cancel</string>
+    <string name="word_not_found">Word not found in dictionary</string>
+    <string name="please_enter_word">Please enter a word to search</string>
+    <string name="search_results">Search Results</string>
+    <string name="offline_dictionary">Offline Dictionary</string>
+    <string name="tap_search_instruction">Tap the search button to look up words</string>
+</resources>
