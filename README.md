@@ -1,6 +1,6 @@
 # Dictionary App (Android)
 
-A simple Android dictionary application that allows users to search for word definitions. Built with Kotlin, 
+A simple Android dictionary application that allows users to search for word definitions. The app is built with considerations for e-ink display devices, keeping the UI minimal. Built with Kotlin, 
 Material Components, and Room for local data persistence.
 
 ## Features
