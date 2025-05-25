@@ -6,9 +6,7 @@ Material Components, and Room for local data persistence.
 ## Features
 
 *   Search for word definitions.
-*   View search history (if implemented or planned).
 *   Clean, user-friendly interface.
-*   (Add any other key features you have or plan, e.g., "Offline access to previously searched words")
 
 ## Screenshots
 
