@@ -26,7 +26,7 @@ Material Components, and Room for local data persistence.
 ## Setup / Build
 
 1.  Clone the repository:
-    bash git clone [https://github.com/your-username/your-repository-name.git](https://github.com/findEthics/Dictionary.git)
+    bash git clone [https://github.com/findEthics/Dictionary.git](https://github.com/findEthics/Dictionary.git)
 2.  Open the project in Android Studio (latest stable version recommended).
 3.  Let Gradle sync and download dependencies.
 4.  Build and run the app on an emulator or physical device.
