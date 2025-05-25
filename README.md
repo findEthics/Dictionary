@@ -12,6 +12,10 @@ Material Components, and Room for local data persistence.
 
 ## Screenshots
 
+![IMG_0088](https://github.com/user-attachments/assets/d911a442-996e-462b-abff-19bf69ee70cc)
+
+![IMG_0090](https://github.com/user-attachments/assets/f88ffcec-80b4-4058-8a7a-bf9b62444294)
+
 ## Tech Stack & Libraries
 
 *   **Kotlin:** Primary programming language.
