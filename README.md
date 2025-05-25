@@ -16,10 +16,6 @@ Material Components, and Room for local data persistence.
 *   **Android SDK:** Core Android framework.
 *   **Material Components for Android:** For UI elements and theming.
 *   **Room Persistence Library:** For local database storage (e.g., search history, cached definitions).
-*   **Coroutines & Flow:** For asynchronous operations.
-*   **ViewModel & LiveData/StateFlow:** For UI-related data lifecycle management.
-*   **Retrofit & Gson/Moshi:** (If fetching definitions from a remote API) For networking.
-*   **Hilt/Koin:** (If using dependency injection)
 
 ## Setup / Build
 
