@@ -39,7 +39,8 @@ class MainActivity : AppCompatActivity() {
                     // you can do so here: this.isEnabled = false (if appropriate)
                 } else {
                     // If search input is empty and no results, then fully hide search mode
-                    hideSearchInput() // This method might also disable this callback
+//                    hideSearchInput() // This method might also disable this callback
+                    hideSearchUIAndExit()
                     // or set isSearchMode to false, which then disables the callback
                 }
             } else {
@@ -83,7 +84,7 @@ class MainActivity : AppCompatActivity() {
                 (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
                 performSearch()
                 isSearchMode = true // Assuming performSearch enters search mode
-                backPressedCallback.isEnabled = true // Enable callback when search is active
+//                backPressedCallback.isEnabled = true // Enable callback when search is active
                 true
             } else {
                 false
@@ -104,6 +105,7 @@ class MainActivity : AppCompatActivity() {
                 }
             } else {
                 // Optional: Auto-search as user types (your existing logic)
+                activateSearchMode()
                 if (searchText.length >= 3) { // Or your preferred auto-search trigger length
                     performAutoSearch(searchText)
                 }
@@ -126,21 +128,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun hideSearchInput() {
+    private fun hideSearchUIAndExit() {
+        // This is the action for "exiting search mode"
         isSearchMode = false
         hasSearchResults = false
+        backPressedCallback.isEnabled = false // Disable custom callback
 
-        binding.searchSection.visibility = android.view.View.GONE
-        binding.searchResultsSection.visibility = android.view.View.GONE
-        binding.welcomeContainer.visibility = android.view.View.VISIBLE
-
-        binding.etSearchInput.text.clear()
-        hideAllResultViews()
-
+        // Hide keyboard
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.etSearchInput.windowToken, 0)
 
-        backPressedCallback.isEnabled = false // Disable custom handling when search is hidden
+        // Option 1: Hide search input and show welcome (if you have other UI to go back to)
+        // binding.searchSection.visibility = android.view.View.GONE
+        // binding.searchResultsSection.visibility = android.view.View.GONE
+        // binding.welcomeContainer.visibility = android.view.View.VISIBLE
+        // binding.etSearchInput.text.clear() // Clear text
+
+        // Option 2: Since this is likely the main activity and primary function,
+        // exiting search mode might mean finishing the activity.
+        // Trigger the default back press which should now finish the activity
+        // because our callback is disabled.
+        onBackPressedDispatcher.onBackPressed()
     }
 
     private fun performSearch() {
@@ -148,7 +156,7 @@ class MainActivity : AppCompatActivity() {
         if (searchWord.isNotEmpty()) {
             val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(binding.etSearchInput.windowToken, 0)
-
+            activateSearchMode()
             searchWordInDatabase(searchWord)
         } else {
             Toast.makeText(this, "Please enter a word to search", Toast.LENGTH_SHORT).show()
@@ -179,6 +187,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun displayWordResult(word: String, definition: String, partOfSpeech: String?) {
         hasSearchResults = true
+        activateSearchMode()
 
         binding.welcomeContainer.visibility = android.view.View.GONE
         binding.searchResultsSection.visibility = android.view.View.VISIBLE
@@ -202,6 +211,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun showNoResultsFound() {
         hasSearchResults = true
+        activateSearchMode()
 
         binding.welcomeContainer.visibility = android.view.View.GONE
         binding.searchResultsSection.visibility = android.view.View.VISIBLE
@@ -234,5 +244,35 @@ class MainActivity : AppCompatActivity() {
         binding.etSearchInput.post {
             imm.showSoftInput(binding.etSearchInput, InputMethodManager.SHOW_IMPLICIT)
         }
+    }
+
+    private fun activateSearchMode() {
+        if (!isSearchMode) { // Only change state if not already active
+            isSearchMode = true
+            backPressedCallback.isEnabled = true // Enable custom back handling
+
+            binding.searchSection.visibility = android.view.View.VISIBLE
+            binding.welcomeContainer.visibility = android.view.View.GONE // Hide welcome when search is active
+
+            binding.etSearchInput.requestFocus()
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            binding.etSearchInput.post { // Ensures the view is ready
+                imm.showSoftInput(binding.etSearchInput, InputMethodManager.SHOW_IMPLICIT)
+            }
+        } else {
+            // If already in search mode, ensure focus and keyboard if they were lost
+            if (!binding.etSearchInput.isFocused) {
+                binding.etSearchInput.requestFocus()
+            }
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            if (!imm.isAcceptingText) { // A simplistic check if keyboard is up
+                binding.etSearchInput.post {
+                    imm.showSoftInput(binding.etSearchInput, InputMethodManager.SHOW_IMPLICIT)
+                }
+            }
+        }
+        // Ensure welcome is hidden if search is active
+        binding.welcomeContainer.visibility = android.view.View.GONE
+        binding.searchSection.visibility = android.view.View.VISIBLE
     }
 }
