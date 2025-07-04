@@ -9,4 +9,5 @@
     <string name="search_results">Search Results</string>
     <string name="offline_dictionary">Offline Dictionary</string>
     <string name="tap_search_instruction">Tap the search button to look up words</string>
+    <string name="toggle_theme">Toggle theme</string>
 </resources>

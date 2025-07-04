@@ -1,6 +1,7 @@
 // app/src/main/java/com/example/dictionary/MainActivity.kt
 package com.example.dictionary
 
+import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
 import android.util.Log
@@ -9,6 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import com.example.dictionary.databinding.ActivityMainBinding
@@ -27,6 +29,11 @@ class MainActivity : AppCompatActivity() {
 
     private var isSearchMode = false
     private var hasSearchResults = false
+    
+    companion object {
+        private const val PREFS_NAME = "DictionaryPrefs"
+        private const val KEY_THEME_MODE = "theme_mode"
+    }
 
     private val backPressedCallback = object : OnBackPressedCallback(true) { // Initially enabled
         override fun handleOnBackPressed() {
@@ -59,10 +66,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Apply saved theme before setting content view
+        applySavedTheme()
+        
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setupUI()
+        setupThemeToggle()
         setupSearchInput()
         onBackPressedDispatcher.addCallback(this, backPressedCallback)
 
@@ -274,5 +286,60 @@ class MainActivity : AppCompatActivity() {
         // Ensure welcome is hidden if search is active
         binding.welcomeContainer.visibility = android.view.View.GONE
         binding.searchSection.visibility = android.view.View.VISIBLE
+    }
+    
+    private fun applySavedTheme() {
+        val sharedPrefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val savedTheme = sharedPrefs.getInt(KEY_THEME_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        AppCompatDelegate.setDefaultNightMode(savedTheme)
+    }
+    
+    private fun setupThemeToggle() {
+        binding.btnThemeToggle.setOnClickListener {
+            toggleTheme()
+        }
+        updateThemeIcon()
+    }
+    
+    private fun toggleTheme() {
+        val currentMode = AppCompatDelegate.getDefaultNightMode()
+        val newMode = when (currentMode) {
+            AppCompatDelegate.MODE_NIGHT_NO -> AppCompatDelegate.MODE_NIGHT_YES
+            AppCompatDelegate.MODE_NIGHT_YES -> AppCompatDelegate.MODE_NIGHT_NO
+            else -> {
+                // If system default, toggle to opposite of current system theme
+                val currentSystemTheme = resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK
+                if (currentSystemTheme == android.content.res.Configuration.UI_MODE_NIGHT_YES) {
+                    AppCompatDelegate.MODE_NIGHT_NO
+                } else {
+                    AppCompatDelegate.MODE_NIGHT_YES
+                }
+            }
+        }
+        
+        // Save theme preference
+        val sharedPrefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        sharedPrefs.edit().putInt(KEY_THEME_MODE, newMode).apply()
+        
+        // Apply theme
+        AppCompatDelegate.setDefaultNightMode(newMode)
+    }
+    
+    private fun updateThemeIcon() {
+        val currentMode = AppCompatDelegate.getDefaultNightMode()
+        val isDarkMode = when (currentMode) {
+            AppCompatDelegate.MODE_NIGHT_YES -> true
+            AppCompatDelegate.MODE_NIGHT_NO -> false
+            else -> {
+                // System default - check actual current theme
+                val currentSystemTheme = resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK
+                currentSystemTheme == android.content.res.Configuration.UI_MODE_NIGHT_YES
+            }
+        }
+        
+        // Set appropriate icon
+        binding.btnThemeToggle.setImageResource(
+            if (isDarkMode) R.drawable.ic_light_mode else R.drawable.ic_dark_mode
+        )
     }
 }
